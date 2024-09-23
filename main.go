@@ -43,16 +43,16 @@ type Session struct {
 
 // Account represents a user account.
 type Account struct {
-	APIToken        string      `json:"api_token"`
-	Timezone        string      `json:"timezone"`
-	ID              int         `json:"id"`
-	Workspaces      []Workspace `json:"workspaces"`
-	Clients         []Client    `json:"clients"`
-	Projects        []Project   `json:"projects"`
-	Tasks           []Task      `json:"tasks"`
-	Tags            []Tag       `json:"tags"`
-	TimeEntries     []TimeEntry `json:"time_entries"`
-	BeginningOfWeek int         `json:"beginning_of_week"`
+	APIToken string `json:"api_token"`
+	Timezone string `json:"timezone"`
+	ID       int    `json:"id"`
+	// Workspaces      []Workspace `json:"workspaces"`
+	// Clients         []Client    `json:"clients"`
+	// Projects        []Project   `json:"projects"`
+	// Tasks           []Task      `json:"tasks"`
+	// Tags            []Tag       `json:"tags"`
+	// TimeEntries     []TimeEntry `json:"time_entries"`
+	BeginningOfWeek int `json:"beginning_of_week"`
 }
 
 // Workspace represents a user workspace.
@@ -422,6 +422,19 @@ func (session *Session) DeleteTimeEntry(timer TimeEntry) ([]byte, error) {
 // IsRunning returns true if the receiver is currently running.
 func (e *TimeEntry) IsRunning() bool {
 	return e.Duration < 0
+}
+
+// GetWorkspaces allows to query for all workspaces
+func (session *Session) GetWorkspaces() (workspaces []Workspace, err error) {
+	dlog.Printf("Getting workspaces")
+	path := "/me/workspaces"
+	data, err := session.get(TogglAPI, path, nil)
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(data, &workspaces)
+	dlog.Printf("Unmarshaled '%s' into %#v\n", data, workspaces)
+	return
 }
 
 // GetProjects allows to query for all projects in a workspace
